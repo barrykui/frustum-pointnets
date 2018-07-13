@@ -124,7 +124,6 @@ def tower_loss(scope, inputs, is_training_pl, batch):
     losses = tf.get_collection('losses', scope=scope)
     total_loss = tf.add_n(losses, name='total_loss')
 
-
     # Write summaries of bounding box IoU and segmentation accuracies
     iou2ds, iou3ds = tf.py_func(provider.compute_box3d_iou, [\
         end_points['center'], \
@@ -140,7 +139,6 @@ def tower_loss(scope, inputs, is_training_pl, batch):
         tf.to_int64(labels_pl))
     accuracy = tf.reduce_sum(tf.cast(correct, tf.float32)) / \
         float(BATCH_SIZE_SLICE*NUM_POINT)
-
 
     if FLAGS.tb_logging:
         for l in losses + [total_loss]:
@@ -195,6 +193,7 @@ def train():
 
     tower_grads = []
     tower_end_points = []
+    tower_losses = []
     tower_acc = []
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(FLAGS.ngpu):
@@ -209,6 +208,7 @@ def train():
                 tower_grads.append(grads)
 
                 tower_end_points.append(end_points_)
+                tower_losses.append(loss_)
                 tower_acc.append(acc_)
                 ###=====================
 
@@ -218,6 +218,7 @@ def train():
     end_points = gather(tower_end_points)
     print("center:",end_points['center'].shape)
 
+    total_loss = tf.reduce_mean(tower_losses)
     #tf.summary.scalar('total_loss', total_loss)
     tf.summary.scalar('iou_2d', tf.reduce_mean(end_points['iou2ds']))
     tf.summary.scalar('iou_3d', tf.reduce_mean(end_points['iou2ds']))
@@ -258,7 +259,7 @@ def train():
            'size_residual_label_pl': size_residual_label_pl,
            'is_training_pl': is_training_pl,
            'end_points': end_points,
-           'loss': loss,
+           'loss': total_loss,
            'train_op': train_op,
            'merged': merged,
            'step': batch}
