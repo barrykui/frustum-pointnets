@@ -67,12 +67,13 @@ To start training with Multi-GPU, just run the following script:
     CUDA_VISIBLE_DEVICES=0,1,3,4 sh scripts/command_multigpu_train_v2.sh
 
 Repeated 3D Object detection results(car) on  KITTI (Validation set) with Multi-GPU:
-method easy      moderate  hard
-v1     83.26     69.28     62.56       paper(F-PointNet v1)
-v1     84.38     70.73     63.27       Repeated on 8-GPUs
 
-v2     83.76     70.92     63.65       paper(F-PointNet v2)
-v2     84.07     70.87     63.57       Repeated on 8-GPUs
+| Method | Easy    | Moderate  | Hard      |         Source       |
+| ------ | ------- | --------- | --------- | -------------------- |
+| v1     | 83.26   | 69.28     | 62.56     | paper(F-PointNet v1) |
+| v1     | 84.38   | 70.73     | 63.27     | Repeated on 8-GPUs   |
+| v2     | 83.76   | 70.92     | 63.65     | paper(F-PointNet v2) |
+| v2     | 84.07   | 70.87     | 63.57     | Repeated on 8-GPUs   |
 
 ### Evaluation
 To evaluate a trained model (assuming you already finished the previous training step) on the validation set, just run:
